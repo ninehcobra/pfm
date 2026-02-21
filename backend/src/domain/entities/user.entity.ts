@@ -1,0 +1,11 @@
+export class User {
+  id: string;
+  email: string;
+  password?: string;
+  fullName: string;
+  avatar?: string;
+  roleId: string;
+  refreshToken?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
