@@ -1,8 +1,21 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  UseGuards,
+} from '@nestjs/common';
 import { BlogService } from 'src/application/use-cases/blog.service';
 import { PermissionsGuard } from 'src/presentation/guards/permissions.guard';
 import { Permissions } from 'src/presentation/guards/permissions.decorator';
-import { JwtAuthGuard } from 'src/presentation/guards/jwt-auth.guard'; // Assume this exists
+import { JwtAuthGuard } from 'src/presentation/guards/jwt-auth.guard';
+import type {
+  CreateBlogDto,
+  UpdateBlogDto,
+} from 'src/application/dto/blog.dto';
 
 @Controller('blogs')
 export class BlogController {
@@ -21,14 +34,14 @@ export class BlogController {
   @Post()
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Permissions('blog:create')
-  async create(@Body() data: any) {
+  async create(@Body() data: CreateBlogDto) {
     return this.blogService.createBlog(data);
   }
 
   @Put(':id')
   @UseGuards(JwtAuthGuard, PermissionsGuard)
   @Permissions('blog:update')
-  async update(@Param('id') id: string, @Body() data: any) {
+  async update(@Param('id') id: string, @Body() data: UpdateBlogDto) {
     return this.blogService.updateBlog(id, data);
   }
 

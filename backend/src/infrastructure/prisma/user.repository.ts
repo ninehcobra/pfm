@@ -38,6 +38,12 @@ export class UserRepository implements IUserRepository {
     }) as unknown as User;
   }
 
+  async findByRefreshToken(token: string): Promise<User | null> {
+    return this.prisma.user.findFirst({
+      where: { refreshToken: token },
+    }) as unknown as User | null;
+  }
+
   async delete(id: string): Promise<void> {
     await this.prisma.user.delete({ where: { id } });
   }

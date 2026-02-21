@@ -1,5 +1,6 @@
-import { Controller, Post, Body, Inject, Get, Req, UseGuards } from '@nestjs/common';
-import { AUTH_SERVICE, IAuthService } from 'src/application/use-cases/auth.service.interface';
+import { Controller, Post, Body, Inject } from '@nestjs/common';
+import { AUTH_SERVICE } from 'src/application/use-cases/auth.service.interface';
+import type { IAuthService } from 'src/application/use-cases/auth.service.interface';
 
 @Controller('auth')
 export class AuthController {
