@@ -2,7 +2,8 @@ import { Injectable, UnauthorizedException, Inject } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { IAuthService, LoginResponse } from './auth.service.interface';
-import { IUserRepository, USER_REPOSITORY } from 'src/domain/repositories/user.repository.interface';
+import type { IUserRepository } from 'src/domain/repositories/user.repository.interface';
+import { USER_REPOSITORY } from 'src/domain/repositories/user.repository.interface';
 import { UserDto } from '../dto/user.dto';
 
 @Injectable()
@@ -46,7 +47,7 @@ export class AuthService implements IAuthService {
   }
 
   async logout(userId: string): Promise<void> {
-    await this.userRepository.update(userId, { refreshToken: null });
+    await this.userRepository.update(userId, { refreshToken: undefined });
   }
 
   private async generateAccessToken(userId: string): Promise<string> {

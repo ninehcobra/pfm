@@ -5,7 +5,7 @@ export class User {
   fullName: string;
   avatar?: string;
   roleId: string;
-  refreshToken?: string;
+  refreshToken?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

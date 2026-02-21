@@ -5,6 +5,8 @@ import { AuthService } from './application/use-cases/auth.service';
 import { AUTH_SERVICE } from './application/use-cases/auth.service.interface';
 import { UserPersistenceModule } from './infrastructure/prisma/user-persistence.module';
 
+import { JwtStrategy } from './infrastructure/security/jwt.strategy';
+
 @Module({
   imports: [
     UserPersistenceModule,
@@ -19,6 +21,7 @@ import { UserPersistenceModule } from './infrastructure/prisma/user-persistence.
       provide: AUTH_SERVICE,
       useClass: AuthService,
     },
+    JwtStrategy,
   ],
   exports: [AUTH_SERVICE],
 })
