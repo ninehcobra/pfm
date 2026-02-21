@@ -10,11 +10,11 @@ export class BlogService {
     @Inject(BLOG_REPOSITORY) private blogRepository: IBlogRepository,
   ) {}
 
-  async getAllBlogs(): Promise<Blog[]> {
-    return this.blogRepository.findAll(true);
+  async getAllBlogs(locale: string = 'en'): Promise<Blog[]> {
+    return this.blogRepository.findAll(true); 
   }
 
-  async getBlogBySlug(slug: string): Promise<Blog | null> {
+  async getBlogBySlug(slug: string, locale: string = 'en'): Promise<Blog | null> {
     return this.blogRepository.findBySlug(slug);
   }
 

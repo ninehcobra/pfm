@@ -9,13 +9,16 @@ import { AuthController } from './presentation/controllers/auth.controller';
 import { BlogService } from './application/use-cases/blog.service';
 import { BLOG_REPOSITORY } from './domain/repositories/blog.repository.interface';
 import { BlogRepository } from './infrastructure/prisma/blog.repository';
+import { PortfolioController } from './presentation/controllers/portfolio.controller';
+import { PortfolioService } from './application/use-cases/portfolio.service';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserPersistenceModule],
-  controllers: [AppController, AuthController, BlogController],
+  controllers: [AppController, AuthController, BlogController, PortfolioController],
   providers: [
     AppService,
     BlogService,
+    PortfolioService,
     {
       provide: BLOG_REPOSITORY,
       useClass: BlogRepository,

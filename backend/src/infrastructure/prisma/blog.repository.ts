@@ -7,43 +7,97 @@ import { Blog } from 'src/domain/entities/blog.entity';
 export class BlogRepository implements IBlogRepository {
   constructor(private prisma: PrismaService) {}
 
-  async create(data: Partial<Blog>): Promise<Blog> {
+  async create(data: Partial<Blog> & { locale?: string }): Promise<Blog> {
+    const locale = data.locale || 'en';
+    const language = await this.prisma.language.findUnique({ where: { code: locale } });
+    if (!language) throw new Error(`Language ${locale} not found`);
+
     return this.prisma.blog.create({
       data: {
-        title: data.title!,
         slug: data.slug!,
-        content: data.content!,
-        authorId: data.authorId!,
         thumbnail: data.thumbnail,
         published: data.published ?? false,
+        authorId: data.authorId!,
+        translations: {
+          create: {
+            title: data.title!,
+            content: data.content!,
+            languageId: language.id,
+          },
+        },
       },
-    }) as unknown as Blog;
+      include: {
+        translations: { where: { languageId: language.id } },
+      },
+    }).then(res => this.mapToEntity(res)) as unknown as Blog;
   }
 
   async findAll(publishedOnly?: boolean): Promise<Blog[]> {
-    return this.prisma.blog.findMany({
+    const blogs = await this.prisma.blog.findMany({
       where: publishedOnly ? { published: true } : {},
-      include: { author: true },
-    }) as unknown as Blog[];
+      include: { 
+        author: true,
+        translations: true // Get all for now, or we could filter by a default locale
+      },
+    });
+    return blogs.map(b => this.mapToEntity(b)) as unknown as Blog[];
   }
 
   async findById(id: string): Promise<Blog | null> {
-    return this.prisma.blog.findUnique({
+    const res = await this.prisma.blog.findUnique({
       where: { id },
-    }) as unknown as Blog | null;
+      include: { translations: true },
+    });
+    return res ? this.mapToEntity(res) : null;
   }
 
   async findBySlug(slug: string): Promise<Blog | null> {
-    return this.prisma.blog.findUnique({
+    const res = await this.prisma.blog.findUnique({
       where: { slug },
-    }) as unknown as Blog | null;
+      include: { translations: true },
+    });
+    return res ? this.mapToEntity(res) : null;
   }
 
-  async update(id: string, data: Partial<Blog>): Promise<Blog> {
-    return this.prisma.blog.update({
+  async update(id: string, data: Partial<Blog> & { locale?: string }): Promise<Blog> {
+    const { title, content, locale, ...rest } = data;
+    
+    if (title || content) {
+      const targetLocale = locale || 'en';
+      const language = await this.prisma.language.findUnique({ where: { code: targetLocale } });
+      if (!language) throw new Error(`Language ${targetLocale} not found`);
+
+      await this.prisma.blogTranslation.upsert({
+        where: { blogId_languageId: { blogId: id, languageId: language.id } },
+        update: {
+          title: title,
+          content: content,
+        },
+        create: {
+          blogId: id,
+          languageId: language.id,
+          title: title!,
+          content: content!,
+        },
+      });
+    }
+
+    const res = await this.prisma.blog.update({
       where: { id },
-      data,
-    }) as unknown as Blog;
+      data: rest as any,
+      include: { translations: true },
+    });
+    return this.mapToEntity(res) as unknown as Blog;
+  }
+
+  private mapToEntity(prismaBlog: any): Blog {
+    const { translations, ...rest } = prismaBlog;
+    return {
+      ...rest,
+      translations,
+      title: translations?.[0]?.title,
+      content: translations?.[0]?.content,
+    };
   }
 
   async delete(id: string): Promise<void> {
