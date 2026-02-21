@@ -22,12 +22,14 @@ export class UserRepository implements IUserRepository {
   async findByEmail(email: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { email },
+      include: { role: true },
     }) as unknown as User | null;
   }
 
   async findById(id: string): Promise<User | null> {
     return this.prisma.user.findUnique({
       where: { id },
+      include: { role: true },
     }) as unknown as User | null;
   }
 
@@ -35,12 +37,14 @@ export class UserRepository implements IUserRepository {
     return this.prisma.user.update({
       where: { id },
       data,
+      include: { role: true },
     }) as unknown as User;
   }
 
   async findByRefreshToken(token: string): Promise<User | null> {
     return this.prisma.user.findFirst({
       where: { refreshToken: token },
+      include: { role: true },
     }) as unknown as User | null;
   }
 

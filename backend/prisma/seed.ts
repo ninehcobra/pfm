@@ -115,6 +115,41 @@ async function main() {
     });
   }
 
+  // 5. Auth (Roles & Permissions)
+  const allPermissions = await prisma.permission.upsert({
+    where: { name: '*:*' },
+    update: {},
+    create: { name: '*:*', description: 'Full access to everything' },
+  });
+
+  const superAdminRole = await prisma.role.upsert({
+    where: { name: 'SUPERADMIN' },
+    update: {},
+    create: {
+      name: 'SUPERADMIN',
+      description: 'System owner with all permissions',
+      permissions: { connect: { id: allPermissions.id } },
+    },
+  });
+
+  // Create Default SuperAdmin User
+  const adminEmail = 'admin@antigravity.dev';
+  const existingAdmin = await prisma.user.findUnique({ where: { email: adminEmail } });
+
+  if (!existingAdmin) {
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash('Admin@123', 10);
+    await prisma.user.create({
+      data: {
+        email: adminEmail,
+        password: hashedPassword,
+        fullName: 'System Administrator',
+        roleId: superAdminRole.id,
+      },
+    });
+    console.log('Default SuperAdmin created: admin@antigravity.dev / Admin@123');
+  }
+
   console.log('Seeding finished.');
 }
 

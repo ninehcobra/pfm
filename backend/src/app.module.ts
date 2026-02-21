@@ -11,14 +11,23 @@ import { BLOG_REPOSITORY } from './domain/repositories/blog.repository.interface
 import { BlogRepository } from './infrastructure/prisma/blog.repository';
 import { PortfolioController } from './presentation/controllers/portfolio.controller';
 import { PortfolioService } from './application/use-cases/portfolio.service';
+import { ProjectManagementController } from './presentation/controllers/project.management.controller';
+import { ProjectManagementService } from './application/use-cases/project.management.service';
+import { ExperienceManagementController } from './presentation/controllers/experience.management.controller';
+import { ExperienceManagementService } from './application/use-cases/experience.management.service';
+import { UIContentManagementController } from './presentation/controllers/uicontent.management.controller';
+import { UIContentManagementService } from './application/use-cases/uicontent.management.service';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserPersistenceModule],
-  controllers: [AppController, AuthController, BlogController, PortfolioController],
+  controllers: [AppController, AuthController, BlogController, PortfolioController, ProjectManagementController, ExperienceManagementController, UIContentManagementController],
   providers: [
     AppService,
     BlogService,
     PortfolioService,
+    ProjectManagementService,
+    ExperienceManagementService,
+    UIContentManagementService,
     {
       provide: BLOG_REPOSITORY,
       useClass: BlogRepository,
