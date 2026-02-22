@@ -32,7 +32,8 @@ export class PermissionsGuard implements CanActivate {
     if (!dbUser) return false;
 
     const userPermissions = dbUser.role.permissions.map(p => p.name);
-    const hasPermission = requiredPermissions.every(permission => userPermissions.includes(permission));
+    const hasWildcard = userPermissions.includes('*:*');
+    const hasPermission = hasWildcard || requiredPermissions.every(permission => userPermissions.includes(permission));
 
     if (!hasPermission) {
       throw new ForbiddenException('You do not have permission to access this resource');
