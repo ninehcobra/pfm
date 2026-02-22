@@ -15,6 +15,7 @@ model User {
   password      String
   fullName      String
   avatar        String?
+  avatarPublicId String?
   blogs         Blog[]
   refreshToken  String?
   
@@ -71,6 +72,7 @@ model UIContent {
 model Project {
   id          String   @id @default(uuid())
   image       String?
+  imagePublicId  String?
   link        String?
   techStack   String[] // Array of tech names
   order       Int      @default(0)
@@ -135,6 +137,7 @@ model Blog {
   id          String   @id @default(uuid())
   slug        String   @unique
   thumbnail   String?
+  thumbnailPublicId String?
   published   Boolean  @default(false)
   authorId    String
   author      User     @relation(fields: [authorId], references: [id])

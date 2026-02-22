@@ -2,6 +2,7 @@ export class Blog {
   id: string;
   slug: string;
   thumbnail?: string;
+  thumbnailPublicId?: string;
   published: boolean;
   authorId: string;
   createdAt: Date;

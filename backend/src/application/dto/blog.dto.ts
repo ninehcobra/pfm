@@ -3,6 +3,7 @@ export interface CreateBlogDto {
   content: string;
   locale: string;
   thumbnail?: string;
+  thumbnailPublicId?: string;
   published?: boolean;
   authorId: string;
 }
@@ -12,5 +13,6 @@ export interface UpdateBlogDto {
   content?: string;
   locale?: string;
   thumbnail?: string;
+  thumbnailPublicId?: string;
   published?: boolean;
 }

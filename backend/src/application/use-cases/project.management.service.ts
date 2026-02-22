@@ -1,12 +1,17 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PrismaService } from '../../infrastructure/prisma/prisma.service';
+import { IMediaService, MEDIA_SERVICE } from '../services/media.service';
 
 @Injectable()
 export class ProjectManagementService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(MEDIA_SERVICE) private mediaService: IMediaService
+  ) {}
 
   async createProject(data: {
     image?: string;
+    imagePublicId?: string;
     link?: string;
     techStack: string[];
     translations: { languageCode: string; title: string; description: string }[];
@@ -22,6 +27,7 @@ export class ProjectManagementService {
     return this.prisma.project.create({
       data: {
         image: data.image,
+        imagePublicId: data.imagePublicId,
         link: data.link,
         techStack: data.techStack,
         translations: {
@@ -38,6 +44,7 @@ export class ProjectManagementService {
 
   async updateProject(id: string, data: {
     image?: string;
+    imagePublicId?: string;
     link?: string;
     techStack?: string[];
     translations: { languageCode: string; title: string; description: string }[];
@@ -50,11 +57,17 @@ export class ProjectManagementService {
     });
     const langMap = new Map(languages.map(l => [l.code, l.id]));
 
+    // 4. Handle image cleanup if replaced
+    if (data.image && project.imagePublicId && data.imagePublicId !== project.imagePublicId) {
+      await this.mediaService.deleteImage(project.imagePublicId);
+    }
+
     // Update main project data and upsert translations
     await this.prisma.project.update({
       where: { id },
       data: {
         image: data.image,
+        imagePublicId: data.imagePublicId,
         link: data.link,
         techStack: data.techStack,
       }
@@ -78,6 +91,10 @@ export class ProjectManagementService {
   }
 
   async deleteProject(id: string) {
+    const project = await this.prisma.project.findUnique({ where: { id } });
+    if (project?.imagePublicId) {
+      await this.mediaService.deleteImage(project.imagePublicId);
+    }
     return this.prisma.project.delete({ where: { id } });
   }
 

@@ -22,4 +22,21 @@ export class UIContentManagementService {
     }
     return { success: true };
   }
+
+  async createKey(data: { key: string; defaultValue: string }) {
+    const languages = await this.prisma.language.findMany();
+    
+    // Create the key for all existing languages
+    const records = languages.map(lang => ({
+      key: data.key,
+      languageId: lang.id,
+      value: data.defaultValue
+    }));
+
+    await this.prisma.uIContent.createMany({
+      data: records
+    });
+
+    return { success: true };
+  }
 }

@@ -16,6 +16,7 @@ export class BlogRepository implements IBlogRepository {
       data: {
         slug: data.slug!,
         thumbnail: data.thumbnail,
+        thumbnailPublicId: data.thumbnailPublicId,
         published: data.published ?? false,
         authorId: data.authorId!,
         translations: {
@@ -84,7 +85,11 @@ export class BlogRepository implements IBlogRepository {
 
     const res = await this.prisma.blog.update({
       where: { id },
-      data: rest as any,
+      data: {
+        ...rest,
+        thumbnail: data.thumbnail,
+        thumbnailPublicId: data.thumbnailPublicId,
+      } as any,
       include: { translations: true },
     });
     return this.mapToEntity(res) as unknown as Blog;

@@ -15,6 +15,7 @@ export class UserRepository implements IUserRepository {
         fullName: data.fullName!,
         roleId: data.roleId!,
         avatar: data.avatar,
+        avatarPublicId: data.avatarPublicId,
       },
     }) as unknown as User;
   }

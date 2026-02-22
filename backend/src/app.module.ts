@@ -17,10 +17,16 @@ import { ExperienceManagementController } from './presentation/controllers/exper
 import { ExperienceManagementService } from './application/use-cases/experience.management.service';
 import { UIContentManagementController } from './presentation/controllers/uicontent.management.controller';
 import { UIContentManagementService } from './application/use-cases/uicontent.management.service';
+import { LanguageManagementController } from './presentation/controllers/language.management.controller';
+import { LanguageManagementService } from './application/use-cases/language.management.service';
+import { UploadController } from './presentation/controllers/upload.controller';
+import { ProfileController } from './presentation/controllers/profile.controller';
+import { MEDIA_SERVICE } from './application/services/media.service';
+import { CloudinaryService } from './infrastructure/cloudinary/cloudinary.service';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserPersistenceModule],
-  controllers: [AppController, AuthController, BlogController, PortfolioController, ProjectManagementController, ExperienceManagementController, UIContentManagementController],
+  controllers: [AppController, AuthController, BlogController, PortfolioController, ProjectManagementController, ExperienceManagementController, UIContentManagementController, LanguageManagementController, UploadController, ProfileController],
   providers: [
     AppService,
     BlogService,
@@ -28,6 +34,11 @@ import { UIContentManagementService } from './application/use-cases/uicontent.ma
     ProjectManagementService,
     ExperienceManagementService,
     UIContentManagementService,
+    LanguageManagementService,
+    {
+      provide: MEDIA_SERVICE,
+      useClass: CloudinaryService,
+    },
     {
       provide: BLOG_REPOSITORY,
       useClass: BlogRepository,
