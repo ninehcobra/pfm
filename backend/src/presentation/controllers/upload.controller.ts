@@ -1,6 +1,8 @@
 import { 
   Controller, 
   Post, 
+  Delete,
+  Param,
   UseInterceptors, 
   UploadedFile, 
   Inject, 
@@ -21,19 +23,24 @@ export class UploadController {
   ) {}
 
   @Post('image')
-  @Permissions('system:config') // Restricted to admin
+  @Permissions('system:config')
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: any) {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
     
-    // Validate file type
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
     if (!allowedTypes.includes(file.mimetype)) {
       throw new BadRequestException('Invalid file type');
     }
 
     return this.mediaService.uploadImage(file);
+  }
+
+  @Delete('image/:publicId')
+  @Permissions('system:config')
+  async deleteImage(@Param('publicId') publicId: string) {
+    return this.mediaService.deleteImage(publicId);
   }
 }
